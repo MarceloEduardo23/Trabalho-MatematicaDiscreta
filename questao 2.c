@@ -14,19 +14,22 @@ int primo(int n) {
 
 int main() {
     int n = 2, cont = 1, primo_atual = 2;
+    printf("%d -> ", n);
     n++;
     time_t tempo_inicial = time(NULL);
     printf("PROGRAMA SENDO EXECUTADO, AGUARDE 60 SEGUNDOS!\n");
 
-    while (difftime(time(NULL), tempo_inicial) < 60) {
+    while (difftime(time(NULL), tempo_inicial) < 5) {
         if (primo(n)) {
             primo_atual = n;
+            //CASO QUERIA VER OS NÚMEROS PRIMOS: (RETIREI PARA QUE O CÓDIGO FIQUE OTIMIZADO)
+            //printf("%d -> ", primo_atual);
             cont++;
         }
         
         n+=2;
     }
 
-    printf("Numeros de primos encontrados: %d\nUltimo primo encontrado: %d\n", cont, primo_atual);
+    printf("\nNumeros de primos encontrados: %d\nUltimo primo encontrado: %d\n", cont, primo_atual);
     return 0;
 }
