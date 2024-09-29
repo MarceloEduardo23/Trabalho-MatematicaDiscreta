@@ -1,35 +1,38 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
 
-// Função para calcular o MDC e os coeficientes s e t
-int mdc_extendido(int a, int b, int *s, int *t) {
-    if (b == 0) {
-        *s = 1; // Coeficiente para a
-        *t = 0; // Coeficiente para b
-        return a; // Retorna o MDC
+int euclidesEST ( long long int a, long long int b, long long int matriz[1000][3], int count)
+{
+    if(b == 0)
+    {
+        return count;
     }
-    
-    int s1, t1;
-    int d = mdc_extendido(b, a % b, &s1, &t1);
-    
-    // Atualiza os coeficientes
-    *s = t1; // s = t1
-    *t = s1 - (a / b) * t1; // t = s1 - (a / b) * t1
-
-    return d; // Retorna o MDC
+    else
+    {
+        count += 1;
+        matriz[count][0] = a / b; 
+        return euclidesEST(b, a % b, matriz, count);    
+    }
 }
 
-int main() {
-    int a, b, s, t;
-
-    printf("Digite dois inteiros (a e b): ");
-    scanf("%d %d", &a, &b);
-
-    int mdc = mdc_extendido(a, b, &s, &t);
-
-    printf("MDC(%d, %d) = %d\n", a, b, mdc);
-    printf("Coeficientes: s = %d, t = %d\n", s, t);
-
+int main()
+{
+   long long int a, b, ii, j;
+   long long int matriz [1000][3] = { {0,1,0}, {0,0,1} };
+  
+    printf("Digite A e B:\n");
+    scanf("%lld%lld", &a, &b);
+    
+    j = euclidesEST(a, b, matriz, 1);  // Executa o algoritmo de Euclides
+   
+    // Calcula os coeficientes de Bézout
+    for(ii = 1; ii < j; ii++)
+    {
+        matriz[ii + 1][1] =  matriz[ii - 1][1] - ( matriz[ii][1] * matriz[ii + 1][0] );
+        matriz[ii + 1][2] =  matriz[ii - 1][2] - ( matriz[ii][2] * matriz[ii + 1][0] );
+    }
+   
+   
+    printf("%lld * (%lld) + %lld * (%lld)", a, matriz[j - 1][1], b, matriz[j - 1][2]);
+   
     return 0;
 }
