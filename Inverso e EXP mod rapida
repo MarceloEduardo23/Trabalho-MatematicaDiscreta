@@ -1,0 +1,178 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+
+#define TAM 1000
+
+// ********************funções de calcular o inverso********************************
+/*chamda será  X = inverso(a,b)  onde  "a","b" onde A mod B*/ 
+
+void troca (long long int *a, long long  int *b);
+long long int Achar_coeficientes(long long int a, long long int b, long long int matriz[TAM][3], int count);
+void euclidesEST (long long int a, long long  int b, long long int *s, long long int *t);
+long long int inverso (long long int a, long long int b);
+
+// *******************funções do algoritimo de exponenciação modular rapida************
+/*chamda será X = exponencia_rapido_0(A,B,M), onde A é a base, B é o expoente e M é o MOD*/
+
+void converter_Binario(int expoente, int expo_Binario[], int *expo_digitos);
+long long int exponencia_rapido_0(int val_base, int val_expoente, int val_mod);
+long long int exponencia_rapido_1(int val_base, int val_mod, int expo_Binario[], int expo_digitos);
+
+
+int main ()
+{
+   int a;
+
+    printf("Digite 1 para achar o inverso e 2 para a exponenciação\n");
+    scanf("%d", &a);
+   
+   if(a == 1)
+   {
+        long long int A,B;
+
+        printf("Digite A e B, onde s será s*A mod b = 1\n");
+        scanf("%lld%lld", &A, &B);
+        printf("%lld\n",inverso(A,B));
+
+   }
+   else 
+   {
+   
+        int A,B,M;
+        long long int x;
+        printf("Digite A,B,M onde A^B mod M\n");
+        scanf("%d%d%d", &A, &B, &M);
+        printf("%lld\n", exponencia_rapido_0(A,B,M));
+
+   }
+
+    return 0;
+   
+}
+
+//******************* algorítimo de exponenciação modular rápida***************************
+
+void converter_Binario(int expoente, int expo_Binario[], int *expo_digitos)
+{
+    *expo_digitos = log2(expoente) + 1; // para saber o tamnho do número
+
+    for(int index = *expo_digitos - 1; index >= 0; index--)
+    {
+        expo_Binario[index] = expoente % 2; // peenche o vetor com número binário
+        expoente /= 2;
+    }
+
+}
+
+long long int exponencia_rapido_0(int val_base, int val_expoente, int val_mod)
+{
+    int expo_Binario[TAM];
+    int expo_digitos;
+
+    converter_Binario(val_expoente, expo_Binario, &expo_digitos);
+
+    return exponencia_rapido_1(val_base, val_mod, expo_Binario, expo_digitos);
+}
+
+long long int exponencia_rapido_1(int val_base, int val_mod, int expo_Binario[], int expo_digitos)
+{
+    long long int X = 1;
+    for (int I = 0; I < expo_digitos; I++ )
+    {
+        if(expo_Binario[I] == 0)
+        {
+            X = (long long)pow(X,2) % val_mod;
+        }
+        else
+        {
+            X = ( (long long)pow(X,2) * val_base) % val_mod;
+        }
+    }
+
+    return X;
+}
+
+//**************************** algorítimo de  acahr o inverso***************************************
+
+void troca (long long int *a, long long  int *b) // troca o valor de uma variável pela outra e virce- versa;
+{
+    long long int temp;
+
+        temp = *a;
+        *a = *b;
+        *b = temp;
+}
+
+long long int Achar_coeficientes(long long int a, long long int b, long long int matriz[TAM][3], int count)
+{
+    long long int temp;
+    
+    while (b != 0) 
+    {
+        count += 1; // incrementa o contador para preencher a matriz a partir da terceira linha
+        matriz[count][0] = a / b; // armazena o quociente atual na matriz
+        
+        temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return count;
+}
+
+void euclidesEST (long long int a, long long  int b, long long int *s, long long int *t)
+{
+   int ii, j;
+   long long int matriz [TAM][3] = { {0,1,0}, {0,0,1} }; // condição inicial da tabela bezout
+  
+    j = Achar_coeficientes (a, b, matriz, 1);  // Executa o algoritmo de Euclides
+   
+    
+    for(ii = 1; ii < j; ii++) // Calcula os coeficientes de Bézout regra da tabela
+    {
+            matriz[ii + 1][1] =  matriz[ii - 1][1] - ( matriz[ii][1] * matriz[ii + 1][0] );
+            matriz[ii + 1][2] =  matriz[ii - 1][2] - ( matriz[ii][2] * matriz[ii + 1][0] );
+    }
+   
+     *s = matriz[j - 1][1]; // maior valor
+     *t = matriz[j - 1][2]; // menor valor
+   
+    return;
+}
+
+long long int inverso (long long int a, long long int b)
+{
+    long long int s, t;
+    int  count;
+    
+    count = 1;
+   
+   if (a < b) // caso 1 com o inverso sendo o coeficinte linear do menor
+   {
+        troca(&a,&b); // realiza a troca para grantir que o euclidson rode 
+       
+        euclidesEST (a, b, &s, &t); // retorna s e t;
+       
+                while ( t < 0) // reescreve o inverso positívo
+                    {
+                        t += a * count;
+                        count++;
+                    }
+
+         return t;
+   }
+   else // caso 2 sendo o inverso coeficinte linear do maior
+   {
+         euclidesEST ( a, b, &s, &t); // retorna s e t;
+       
+                while ( s < 0) // reescreve o inverso positivo
+                {
+                    s += b * count;
+                    count++;
+                }
+
+       return s; 
+   } 
+    
+}
